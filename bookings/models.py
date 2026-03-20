@@ -23,3 +23,17 @@ class Property(models.Model):
 
     def __str__(self):
         return self.title
+
+class Booking(models.Model):
+    tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings")
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="bookings")
+    initial_date = models.DateField()
+    final_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Reserva"
+        verbose_name_plural = "Reservas"
+
+    def __str__(self):
+        return f"Reserva de {self.tenant} en {self.property.title}"
