@@ -8,7 +8,7 @@ class User(AbstractUser):
 class Property(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    location = models.CharField(max_length=64)
+    location = models.CharField(max_length=255)
     image = models.ImageField()
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     children = models.PositiveIntegerField()
