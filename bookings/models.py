@@ -1,9 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 class User(AbstractUser):
-    pass
+    email = models.EmailField(unique=True)
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
+
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+
+    def __str__(self):
+        return self.username
 
 class Property(models.Model):
     title = models.CharField(max_length=255)
