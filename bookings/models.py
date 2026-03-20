@@ -9,10 +9,17 @@ class Property(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=255)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='properties/')
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     children = models.PositiveIntegerField()
     adults = models.PositiveIntegerField()
     rooms = models.PositiveIntegerField()
     allow_pets = models.BooleanField(default=False)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="properties")
+    
+    class Meta:
+        verbose_name = "Propiedad"
+        verbose_name_plural = "Propiedades"
+
+    def __str__(self):
+        return self.title
