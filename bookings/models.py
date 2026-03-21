@@ -1,9 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 class User(AbstractUser):
-    pass
+    email = models.EmailField(unique=True)
+    phone_number = PhoneNumberField(null=True, blank=True, unique=True)
+
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+
+    def __str__(self):
+        return self.username
 
 class Property(models.Model):
     title = models.CharField(max_length=255)
@@ -24,6 +33,9 @@ class Property(models.Model):
     def __str__(self):
         return self.title
 
+    def is_valid_property(self):
+        return self.price_per_night > 0 and self.adults > 0 and self.rooms > 0
+
 class Booking(models.Model):
     tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings")
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="bookings")
@@ -37,3 +49,5 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Reserva de {self.tenant} en {self.property.title}"
+
+    def is_valid_booking(self):
