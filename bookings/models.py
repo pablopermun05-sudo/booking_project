@@ -51,3 +51,4 @@ class Booking(models.Model):
         return f"Reserva de {self.tenant} en {self.property.title}"
 
     def is_valid_booking(self):
+        return self.initial_date < self.final_date
