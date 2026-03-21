@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .models import User, Property, Booking
 from datetime import date, timedelta
+from django.core.exceptions import ValidationError
 
 
 class PropertyTestCase(TestCase):
@@ -17,7 +18,7 @@ class PropertyTestCase(TestCase):
             password="123"
         )
 
-        self.p1 = Property.objects.create(
+        self.p1 = Property(
             title="Apartamento Centro",
             description="Desc",
             location="Madrid",
@@ -29,7 +30,7 @@ class PropertyTestCase(TestCase):
             owner=self.u1
         )
 
-        self.p2 = Property.objects.create(
+        self.p2 = Property(
             title="Estudio",
             description="Desc",
             location="Madrid",
@@ -41,7 +42,7 @@ class PropertyTestCase(TestCase):
             owner=self.u1
         )
 
-        self.p_free = Property.objects.create(
+        self.p_free = Property(
             title="Error Precio",
             description="Desc",
             location="Madrid",
@@ -53,7 +54,7 @@ class PropertyTestCase(TestCase):
             owner=self.u1
         )
 
-        self.p_negative = Property.objects.create(
+        self.p_negative = Property(
             title="Error Negativo",
             description="Desc",
             location="Madrid",
@@ -65,7 +66,7 @@ class PropertyTestCase(TestCase):
             owner=self.u1
         )
 
-        self.p_no_adults = Property.objects.create(
+        self.p_no_adults = Property(
             title="Error Adultos",
             description="Desc",
             location="Madrid",
@@ -77,7 +78,7 @@ class PropertyTestCase(TestCase):
             owner=self.u1
         )
 
-        self.p_no_rooms = Property.objects.create(
+        self.p_no_rooms = Property(
             title="Error Cuartos",
             description="Desc",
             location="Madrid",
@@ -90,21 +91,39 @@ class PropertyTestCase(TestCase):
         )
 
     def test_valid_property(self):
-        self.assertTrue(self.p1.is_valid_property())
-        self.assertTrue(self.p2.is_valid_property())
+        try:
+            self.p1.full_clean()
+            self.p2.full_clean()
+        except ValidationError:
+            self.fail("Should not raise ValidationError")
 
     def test_invalid_property_free_price(self):
-        self.assertFalse(self.p_free.is_valid_property())
+        try:
+            self.p_free.full_clean()
+            self.fail("Should raise ValidationError")
+        except ValidationError:
+            pass
 
     def test_invalid_property_negative_price(self):
-        self.assertFalse(self.p_negative.is_valid_property())
+        try:
+            self.p_negative.full_clean()
+            self.fail("Should raise ValidationError")
+        except ValidationError:
+            pass
 
     def test_invalid_property_adults(self):
-        self.assertFalse(self.p_no_adults.is_valid_property())
+        try:
+            self.p_no_adults.full_clean()
+            self.fail("Should raise ValidationError")
+        except ValidationError:
+            pass
 
     def test_invalid_property_rooms(self):
-        self.assertFalse(self.p_no_rooms.is_valid_property())
-
+        try:
+            self.p_no_rooms.full_clean()
+            self.fail("Should raise ValidationError")
+        except ValidationError:
+            pass
 
 class BookingTestCase(TestCase):
 
@@ -133,29 +152,31 @@ class BookingTestCase(TestCase):
             owner=self.owner
         )
 
-    def test_valid_booking(self):
-        booking = Booking.objects.create(
+        self.booking1 = Booking(
             tenant=self.tenant,
             property=self.property,
             initial_date=date.today(),
             final_date=date.today() + timedelta(days=3)
         )
-        self.assertTrue(booking.is_valid_booking())
-
-    def test_invalid_booking_same_day(self):
-        booking = Booking.objects.create(
+        self.booking2 = Booking(
             tenant=self.tenant,
             property=self.property,
             initial_date=date.today(),
-            final_date=date.today()
+            final_date=date.today() + timedelta(days=3)
         )
-        self.assertFalse(booking.is_valid_booking())
 
-    def test_invalid_booking_end_before_start(self):
-        booking = Booking.objects.create(
-            tenant=self.tenant,
-            property=self.property,
-            initial_date=date.today(),
-            final_date=date.today() - timedelta(days=1)
-        )
-        self.assertFalse(booking.is_valid_booking())
+    def test_valid_booking(self):
+        try:
+            self.booking1.full_clean()
+        except ValidationError:
+            self.fail("Should not raise ValidationError")
+
+    def test_overlap_booking(self):
+        # Repito el código anterior para que me de error de solapamiento
+        try:
+            self.booking1.full_clean()
+            self.booking1.save()
+            self.booking2.full_clean()
+            self.fail("Should raise ValidationError")
+        except ValidationError:
+            pass
