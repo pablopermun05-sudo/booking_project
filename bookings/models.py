@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from django.core.exceptions import ValidationError
+from datetime import date
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -33,8 +35,19 @@ class Property(models.Model):
     def __str__(self):
         return self.title
 
-    def is_valid_property(self):
-        return self.price_per_night > 0 and self.adults > 0 and self.rooms > 0
+    def clean(self):
+        if self.price_per_night < 0:
+            raise ValidationError("El precio por noche no puede ser negativo")
+        if self.price_per_night == 0:
+            raise ValidationError("El precio por noche no puede ser 0")
+        if self.adults == 0:
+            raise ValidationError("El número máximos de adultos no puede ser 0")
+        if self.rooms == 0:
+            raise ValidationError("El número de habitaciones no puede ser 0")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 class Booking(models.Model):
     tenant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings")
@@ -50,5 +63,33 @@ class Booking(models.Model):
     def __str__(self):
         return f"Reserva de {self.tenant} en {self.property.title}"
 
-    def is_valid_booking(self):
-        return self.initial_date < self.final_date
+    def clean(self):
+        # Primero validamos que las fechas tengan sentido
+        if self.initial_date >= self.final_date:
+            raise ValidationError("La fecha de salida debe ser posterior a la de entrada.")
+
+        # Comprobamos que la fecha inicial sea igual o posterior al día de hoy
+        if self.initial_date < date.today():
+            raise ValidationError("La fecha de entrada no puede ser anterior al día de hoy.")
+
+         # El dueño no puede reservar su propiedad
+        if self.tenant == self.property.owner:
+             raise ValidationError("No puedes reservar tu propia vivienda.")
+
+        # Buscamos reservas existentes que choquen
+        bookings = Booking.objects.filter(
+            property=self.property,
+            initial_date__lt=self.final_date,
+            final_date__gt=self.initial_date
+        )
+
+        # Si el objeto ya existe en la BD (es una edición), lo excluimos del chequeo
+        if self.pk:
+            bookings = bookings.exclude(pk=self.pk)
+
+        if bookings.exists():
+            raise ValidationError("Ya hay una reserva en esas fechas")
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
