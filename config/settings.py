@@ -114,7 +114,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Configuración para archivos subidos por usuarios (Fotos de casas)
 MEDIA_URL = '/media/'
