@@ -34,6 +34,10 @@ body {
     background-color: #005A9E;
 }
 
+#log-out-button:hover {
+    background-color: #e60000;
+}
+
 .nav-link {
     color: #666777;
     font-weight: 500;
