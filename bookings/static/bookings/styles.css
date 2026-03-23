@@ -19,6 +19,11 @@ body {
     border-radius: 50px;
     text-decoration: none;
     transition: 0.3s background-color;
+    margin-right: 10px;
+}
+
+#login-button {
+    background-color: black;
 }
 
 .login-button:hover {
@@ -34,4 +39,39 @@ body {
 .logo-custom {
     height: 70px;
     width: auto;
+}
+
+.logo-custom-display {
+    height: 60px;
+    width: auto;
+}
+
+@media (max-width: 750px) {
+    .solo-pc {
+        display: none;
+    }
+    /* Pasa los botones de inicio de sesión y registrarse a dentro del display*/
+    .solo-movil {
+        display: flex; 
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .login-button {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+
+    .offcanvas-body {
+        padding-top: 0 !important;
+    }
+}
+
+@media (min-width: 750px) {
+    .solo-movil {
+        display: none;
+    }
+    .solo-pc {
+        display: flex;
+    }
 }

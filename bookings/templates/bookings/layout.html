@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg fixed-top">
+    <nav class="navbar navbar-expand-xl fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="{% static 'bookings/alojamientovacacional.png' %}" alt="Logo" class="logo-custom">
@@ -20,11 +20,17 @@
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Logo</h5>
+                    <a class="navbar-brand d-flex align-items-center" href="#">
+                        <img src="{% static 'bookings/alojamientovacacional.png' %}" alt="Logo" class="logo-custom-display">
+                    </a>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
                     <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <div class="solo-movil mt-0">
+                            <a href="#" class="login-button text-nowrap" id="login-button" style="margin-bottom: 10px;">Iniciar Sesión</a>
+                            <a href="#" class="login-button text-nowrap" id="sign-up-button" style="margin-bottom: 10px;">Registrarse</a>
+                        </div>
                         <li class="nav-item">
                             <a class="nav-link mx-lg-2 active" aria-current="page" href="#">Home</a>
                         </li>
@@ -40,11 +46,16 @@
                     </ul>
                 </div>
             </div>
-            <a href="#" class="login-button">Login</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <div class="d-flex align-items-center buttons-container">
+                <div class="solo-pc">
+                    <a href="#" class="login-button text-nowrap" id="login-button">Iniciar Sesión</a>
+                    <a href="#" class="login-button text-nowrap" id="sign-up-button">Registrarse</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
         </div>
     </nav>
 
