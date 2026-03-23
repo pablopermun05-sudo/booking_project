@@ -22,8 +22,12 @@ body {
     margin-right: 10px;
 }
 
-#login-button {
+#login-button, #edit-button {
     background-color: black;
+}
+
+#log-out-button {
+    background-color: #ff4d4d;
 }
 
 .login-button:hover {
