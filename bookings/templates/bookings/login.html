@@ -10,10 +10,10 @@
             <form action="{% url 'login' %}" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <input autofocus class="form-control" type="text" name="username" placeholder="Nombre de usuario">
+                    <input autofocus class="form-control" type="text" name="username" placeholder="Nombre de usuario" required>
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="password" name="password" placeholder="Contraseña">
+                    <input class="form-control" type="password" name="password" placeholder="Contraseña" required>
                 </div>
                 <div class="d-grid gap-2 mb-3">
                     <button class="login-button" type="submit" value="Login">Iniciar Sesión</button>
