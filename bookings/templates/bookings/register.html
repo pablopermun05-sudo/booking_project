@@ -2,24 +2,41 @@
 
 {% block body %}
 <div class="d-flex justify-content-center mt-5">
-    <div class="card text-bg-light shadow-sm" style="width: 100%; max-width: 500px;">
+    <div class="card text-bg-light shadow-sm" style="width: 100%; max-width: 500px; margin-bottom: 30px;">
         <div class="card-header text-center py-3">
             <h2 class="mb-0">Registrarse</h2>
         </div>
         <div class="card-body p-4">
+            {% if message %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
             <form action="{% url 'register' %}" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
-                    <input class="form-control" autofocus type="text" name="username" placeholder="Nombre de usuario">
+                    <input class="form-control" autofocus type="text" name="name" placeholder="Nombre" required>
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="password" name="password" placeholder="Contraseña">
+                    <input class="form-control" autofocus type="text" name="last_name" placeholder="Apellido" required>
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="password" name="confirmation" placeholder="Confirmar contraseña">
+                    <input class="form-control" autofocus type="text" name="username" placeholder="Nombre de usuario" required>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" autofocus type="email" name="email" placeholder="Correo electrónico" required>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" autofocus type="tel" name="phone_number" placeholder="Teléfono" required>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <div class="mb-3">
+                    <input class="form-control" type="password" name="confirmation" placeholder="Confirmar contraseña" required>
                 </div>
                 <div class="d-grid gap-2 mb-3">
-                    <button class="login-button" type="submit" value="Register">Iniciar Sesión</button>
+                    <button class="login-button" type="submit" value="Register">Registrarse</button>
                 </div>
             </form>
             <p class="text-center mb-0">

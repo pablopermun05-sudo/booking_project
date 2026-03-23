@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
+from django.db import IntegrityError
+from .models import User
 
 # Create your views here.
 def index(request):
@@ -34,20 +36,30 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
+        name = request.POST["name"]
+        last_name = request.POST["last_name"]
         username = request.POST["username"]
         email = request.POST["email"]
+        phone_number = request.POST["phone_number"]
 
         # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
             return render(request, "bookings/register.html", {
-                "message": "Passwords must match."
+                "message": "Las contraseñas deben coincidir."
             })
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=name,
+                last_name=last_name,
+                phone_number=phone_number
+            )
             user.save()
         except IntegrityError:
             return render(request, "bookings/register.html", {
