@@ -36,42 +36,22 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-.logo-custom {
-    height: 70px;
-    width: auto;
-}
-
-.logo-custom-display {
-    height: 60px;
-    width: auto;
-}
+.logo-custom { height: 70px; width: auto; }
+.logo-custom-display { height: 60px; width: auto; }
+.solo-movil { display: none; }
+.solo-pc { display: flex; }
 
 @media (max-width: 750px) {
-    .solo-pc {
-        display: none;
-    }
-    /* Pasa los botones de inicio de sesión y registrarse a dentro del display*/
-    .solo-movil {
-        display: flex; 
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .login-button {
-        padding: 8px 15px;
-        font-size: 13px;
-    }
-
-    .offcanvas-body {
-        padding-top: 0 !important;
-    }
+    .solo-pc { display: none; }
+    .solo-movil { display: flex; flex-direction: row; flex-wrap: wrap; }
+    .login-button { padding: 8px 15px; font-size: 13px; }
+    .offcanvas-body { padding-top: 0 !important; }
 }
 
-@media (min-width: 750px) {
-    .solo-movil {
-        display: none;
-    }
-    .solo-pc {
-        display: flex;
-    }
+@media (max-width: 465px) {
+    .logo-custom { height: 43px; }
+}
+
+@media (max-width: 400px) {
+    .logo-custom-display { height: 50px; }
 }
