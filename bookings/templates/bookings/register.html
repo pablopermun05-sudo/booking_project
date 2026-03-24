@@ -1,0 +1,24 @@
+{% extends "bookings/layout.html" %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card text-bg-light shadow-sm" style="width: 100%; max-width: 500px; margin-bottom: 30px;">
+        <div class="card-header text-center py-3">
+            <h2 class="mb-0">Registrarse</h2>
+        </div>
+        <div class="card-body p-4">
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2 mb-3">
+                    <button class="login-button" type="submit" value="Register">Registrarse</button>
+                </div>
+            </form>
+            <p class="text-center mb-0">
+                ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí.</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
