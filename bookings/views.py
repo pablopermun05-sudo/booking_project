@@ -63,7 +63,6 @@ def register(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "bookings/register.html", {
-                "message": "Las contraseñas deben coincidir.",
                 "form": form
             })
     else:
