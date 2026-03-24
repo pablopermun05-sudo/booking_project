@@ -1,4 +1,5 @@
 {% extends "bookings/layout.html" %}
+{% load crispy_forms_tags %}
 
 {% block body %}
 <div class="d-flex justify-content-center mt-5">
@@ -9,12 +10,7 @@
         <div class="card-body p-4">
             <form action="{% url 'login' %}" method="post">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <input autofocus class="form-control" type="text" name="username" placeholder="Nombre de usuario" required>
-                </div>
-                <div class="mb-3">
-                    <input class="form-control" type="password" name="password" placeholder="Contraseña" required>
-                </div>
+                {{ form|crispy }}
                 <div class="d-grid gap-2 mb-3">
                     <button class="login-button" type="submit" value="Login">Iniciar Sesión</button>
                 </div>

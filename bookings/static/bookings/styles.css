@@ -53,6 +53,12 @@ button.login-button {
     font-family: 'Arial', sans-serif;
 }
 
+.alert ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
 .logo-custom { height: 70px; width: auto; }
 .logo-custom-display { height: 60px; width: auto; }
 .solo-movil { display: none; }

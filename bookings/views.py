@@ -7,29 +7,36 @@ from django.db import IntegrityError
 from .models import User
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
 def index(request):
     return render(request, "bookings/index.html")
 
+class LoginForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': "Usuario o contraseña incorrectos. Inténtalo de nuevo.",
+    }
+
 def login_view(request):
     if request.method == "POST":
-
-        # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-
-        # Check if authentication successful
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "bookings/login.html", {
-                "message": "Invalid username and/or password."
-            })
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
+        
+        return render(request, "bookings/login.html", {
+            "form": form
+        })
     else:
-        return render(request, "bookings/login.html")
+        return render(request, "bookings/login.html", {
+            "form": LoginForm()
+        })
 
 def logout_view(request):
     logout(request)
@@ -51,7 +58,8 @@ def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save() 
+            login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "bookings/register.html", {

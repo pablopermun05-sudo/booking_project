@@ -15,7 +15,7 @@
             {% endif %}
             <form action="{% url 'register' %}" method="post">
                 {% csrf_token %}
-                {{ form|crispy }}                
+                {{ form|crispy }}
                 <div class="d-grid gap-2 mb-3">
                     <button class="login-button" type="submit" value="Register">Registrarse</button>
                 </div>
