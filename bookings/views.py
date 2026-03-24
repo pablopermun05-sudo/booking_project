@@ -39,6 +39,13 @@ class RegisterForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ("first_name","last_name","username", "email", "phone_number")
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Elimina los textos de ayuda
+        self.fields['username'].help_text = ""
+        self.fields['password1'].help_text = ""
+        self.fields['password2'].help_text = ""
 
 def register(request):
     if request.method == "POST":
