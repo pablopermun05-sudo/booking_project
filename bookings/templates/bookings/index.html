@@ -2,37 +2,34 @@
 {% load static %}
 
 {% block body %}
-   <div class="d-flex justify-content-center mt-5">
-      <div class="card border-light mb-3">
-         <div class="row g-0">
-            <div class="col-md-4">
-               <img src="{% static 'bookings/fondo.png' %}" class="img-fluid rounded-start h-100 object-fit-cover"
-                  alt="...">
-            </div>
-            <div class="col-md-8">
-               <div class="card-body">
-                  <h4 class="card-title fw-bold">Título de la Vivienda</h4>
-                  <p class="card-text"><i class="bi bi-geo-alt-fill text-danger"></i><small class="text-body-secondary">
-                        Mazagón, Andalucía, España</small></p>
-                  <p class="card-text mb-3">Disfruta de la comodidad en este luminoso ático de 85 m² ubicado en una zona
-                     residencial tranquila. La vivienda cuenta con 2 dormitorios amplios, un salón de concepto abierto y
-                     una cocina totalmente equipada con acabados de alta gama.</p>
-                  <hr class="mt-1 mb-1">
-                  <div class="d-flex justify-content-between align-items-end">
-                     <div>
-                        <p class="card-text mb-0"><small class="text-body-secondary">Precio por noche</small></p>
-                        <p class="card-text fs-4 fw-bold text-primary mb-0">80,00€</p>
-                     </div>
-                     <div>
-                        <a href="#" class="primary-button text-nowrap d-inline-flex justify-content-center fw-bold" id="sign-up-button">Ver disponibilidad <i class="bi bi-chevron-right ms-1"></i></a>
-                     </div>
+
+{% for property in properties %}
+<div class="d-flex justify-content-center mt-5">
+   <div class="card border-light mb-3">
+      <div class="row g-0">
+         <div class="col-md-4">
+            <img src="{% static 'bookings/fondo.png' %}" class="img-fluid rounded-start h-100 object-fit-cover"
+               alt="...">
+         </div>
+         <div class="col-md-8">
+            <div class="card-body">
+               <h4 class="card-title fw-bold">{{ property.title|truncatechars:50 }}</h4>
+               <p class="card-text"><i class="bi bi-geo-alt-fill text-danger"></i><small class="text-body-secondary">{{ property.location }}</small></p>
+               <p class="card-text mb-3">{{ property.description|truncatechars:160 }}</p>
+               <hr class="mt-1 mb-1">
+               <div class="d-flex justify-content-between align-items-end">
+                  <div>
+                     <p class="card-text mb-0"><small class="text-body-secondary">Precio por noche</small></p>
+                     <p class="card-text fs-4 fw-bold text-primary mb-0">{{ property.price }}€</p>
+                  </div>
+                  <div>
+                     <a href="#" class="primary-button text-nowrap d-inline-flex justify-content-center fw-bold">Ver disponibilidad <i class="bi bi-chevron-right ms-1"></i></a>
                   </div>
                </div>
             </div>
          </div>
       </div>
    </div>
-{% for property in properties %}
-
+</div>
 {% endfor %}
 {% endblock %}
