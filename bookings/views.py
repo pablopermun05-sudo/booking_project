@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from .models import User
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 def index(request):
@@ -33,39 +35,24 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
+class RegisterForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ("first_name","last_name","username", "email", "phone_number")
 
 def register(request):
     if request.method == "POST":
-        name = request.POST["name"]
-        last_name = request.POST["last_name"]
-        username = request.POST["username"]
-        email = request.POST["email"]
-        phone_number = request.POST["phone_number"]
-
-        # Ensure password matches confirmation
-        password = request.POST["password"]
-        confirmation = request.POST["confirmation"]
-        if password != confirmation:
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
             return render(request, "bookings/register.html", {
-                "message": "Las contraseñas deben coincidir."
+                "message": "Las contraseñas deben coincidir.",
+                "form": form
             })
 
-        # Attempt to create new user
-        try:
-            user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=password,
-                first_name=name,
-                last_name=last_name,
-                phone_number=phone_number
-            )
-            user.save()
-        except IntegrityError:
-            return render(request, "bookings/register.html", {
-                "message": "Username already taken."
-            })
-        login(request, user)
-        return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "bookings/register.html")
+        return render(request, "bookings/register.html", {
+            "form": RegisterForm()
+        })
