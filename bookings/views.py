@@ -58,7 +58,6 @@ def register(request):
                 "message": "Las contraseñas deben coincidir.",
                 "form": form
             })
-
     else:
         return render(request, "bookings/register.html", {
             "form": RegisterForm()
