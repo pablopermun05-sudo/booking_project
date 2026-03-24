@@ -12,7 +12,7 @@ body {
     height: 100px;
 }
 
-.login-button {
+.primary-button {
     background-color: #0078D7;
     color: #fff;
     font-size: 14px;
@@ -23,7 +23,7 @@ body {
     margin-right: 10px;
 }
 
-button.login-button {
+button.primary-button {
     border: none;
     font: inherit;
     cursor: pointer;
