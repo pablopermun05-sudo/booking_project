@@ -4,14 +4,38 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from .models import User
+from .models import User, Property
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 
 # Create your views here.
+class SearchForm(forms.Form):
+    DESTINATION = [
+        ('', '¿A dónde vas?'),
+        ('Palos de la Frontera', 'Palos de la Frontera'),
+        ('Mazagón', 'Mazagón')
+    ]
+    NUM_CHOICES = [(i, str(i)) for i in range(1, 11)]
+    CHOICES_WITH_ZERO = [(i, str(i)) for i in range(0, 11)]
+
+    location = forms.ChoiceField(choices=DESTINATION, required=False)
+    initial_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    final_date = forms.DateField(
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    adults = forms.ChoiceField(choices=NUM_CHOICES, required=False, initial=1)
+    children = forms.ChoiceField(choices=CHOICES_WITH_ZERO, required=False, initial=0)
+    rooms = forms.ChoiceField(choices=NUM_CHOICES, required=False, initial=1)
+    pets = forms.BooleanField(required=False, label="¿Mascotas?")
+
 def index(request):
-    return render(request, "bookings/index.html")
+
+    return render(request, "bookings/index.html", {
+        "form": SearchForm()
+    })
 
 class LoginForm(AuthenticationForm):
     error_messages = {
