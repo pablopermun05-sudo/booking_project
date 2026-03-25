@@ -59,6 +59,26 @@ button.primary-button {
     margin: 0;
 }
 
+#h1Index {
+    color: #fff;
+    font-size: 3rem;
+    font-weight: 800;
+    text-shadow: none;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.form-check-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #495057;
+}
+
 .logo-custom { height: 70px; width: auto; }
 .logo-custom-display { height: 60px; width: auto; }
 .solo-movil { display: none; }

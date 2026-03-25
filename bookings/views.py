@@ -19,17 +19,21 @@ class SearchForm(forms.Form):
     NUM_CHOICES = [(i, str(i)) for i in range(1, 11)]
     CHOICES_WITH_ZERO = [(i, str(i)) for i in range(0, 11)]
 
-    location = forms.ChoiceField(choices=DESTINATION, required=False)
+    location = forms.ChoiceField(label="Lugar", choices=DESTINATION)
     initial_date = forms.DateField(
+        label="Entrada",
+        required=False,
         widget=forms.DateInput(attrs={'type': 'date'})
     )
     final_date = forms.DateField(
+        label="Salida",
+        required=False,
         widget=forms.DateInput(attrs={'type': 'date'})
     )
-    adults = forms.ChoiceField(choices=NUM_CHOICES, required=False, initial=1)
-    children = forms.ChoiceField(choices=CHOICES_WITH_ZERO, required=False, initial=0)
-    rooms = forms.ChoiceField(choices=NUM_CHOICES, required=False, initial=1)
-    pets = forms.BooleanField(required=False, label="¿Mascotas?")
+    adults = forms.ChoiceField(label="Adultos", choices=NUM_CHOICES, required=False, initial=1)
+    children = forms.ChoiceField(label="Niños", choices=CHOICES_WITH_ZERO, required=False, initial=0)
+    rooms = forms.ChoiceField(label="Habitaciones", choices=NUM_CHOICES, required=False, initial=1)
+    pets = forms.BooleanField(required=False, label="Mascotas")
 
 def index(request):
 
