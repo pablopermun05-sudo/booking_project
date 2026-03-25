@@ -8,6 +8,8 @@ from .models import User, Property
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import JsonResponse
+from datetime import date
 
 # Create your views here.
 class SearchForm(forms.Form):
@@ -40,6 +42,74 @@ def index(request):
     return render(request, "bookings/index.html", {
         "form": SearchForm()
     })
+
+def properties(request):
+    if request.method != "GET":
+        return JsonResponse({"error": "Petición GET necesaria."}, status=400)
+
+    location = request.GET.get('location')
+    initial_date = request.GET.get('initial_date')
+    final_date = request.GET.get('final_date')
+    adults = request.GET.get('adults')
+    children = request.GET.get('children')
+    rooms = request.GET.get('rooms')
+    pets = request.GET.get('pets')
+
+    properties = Property.objects.all()
+
+    if location:
+        properties.filter(location=location)
+
+    if initial_date or final_date:
+        if not initial_date or not final_date:
+             return JsonResponse({"error": "Ambas fechas deben ser seleccionadas."}, status=400)
+
+        initial_date = date.fromisoformat(initial_date)
+        final_date = date.fromisoformat(final_date)
+
+        if initial_date >= final_date:
+            return JsonResponse({"error": "La fecha de salida debe ser posterior a la de entrada."}, status=400)
+        elif initial_date < date.today():
+            return JsonResponse({"error": "La fecha de entrada no puede ser anterior al día de hoy."}, status=400)
+
+        # Pongo "__" porque es la sintaxis del ORM de Django para realizar consultas entre modelos relacionados
+        properties = properties.exclude(
+            bookings__initial_date__lt=final_date,
+            bookings__final_date__gt=initial_date
+        )
+    
+    if adults:
+        try:
+            adults = int(adults)
+            if adults < 1:
+                return JsonResponse({"error": "El número de adultos tiene que ser mayor que 0."}, status=400)
+            properties = properties.filter(adults__gte=adults)
+        except:
+            return JsonResponse({"error": "Introduce un número válido para indicar el número de adultos."}, status=400)
+
+    if children:
+        try:
+            children = int(children)
+            if children < 0:
+                return JsonResponse({"error": "El número de niños tiene que ser mayor o igual a 0."}, status=400)
+            properties = properties.filter(children__gte=children)
+        except:
+            return JsonResponse({"error": "Introduce un número válido para indicar el número de niños."}, status=400)
+
+    if rooms:
+        try:
+            rooms = int(rooms)
+            if rooms < 1:
+                return JsonResponse({"error": "El número de habitaciones tiene que ser mayor que 0."}, status=400)
+            properties = properties.filter(rooms__gte=rooms)
+        except:
+            return JsonResponse({"error": "Introduce un número válido para indicar el número de habitaciones."}, status=400)
+    
+    if pets:
+        properties = properties.filter(allow_pets=True)
+
+    properties = list(properties.values())
+    return JsonResponse(properties, safe=False)
 
 class LoginForm(AuthenticationForm):
     error_messages = {

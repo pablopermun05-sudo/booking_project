@@ -58,7 +58,7 @@
                <div class="d-flex justify-content-between align-items-end">
                   <div>
                      <p class="card-text mb-0"><small class="text-body-secondary">Precio por noche</small></p>
-                     <p class="card-text fs-4 fw-bold text-primary mb-0">{{ property.price }}€</p>
+                     <p class="card-text fs-4 fw-bold text-primary mb-0">{{ property.price_per_night }}€</p>
                   </div>
                   <div>
                      <a href="#" class="primary-button text-nowrap d-inline-flex justify-content-center fw-bold">Ver
@@ -73,5 +73,5 @@
 {% endfor %}
 {% endblock %}
 {% block script %}
-    <script src="{% static 'bookings/bookings.js' %}"></script>
+<script src="{% static 'bookings/bookings.js' %}"></script>
 {% endblock %}
