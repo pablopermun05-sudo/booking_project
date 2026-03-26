@@ -7,5 +7,5 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     #API ROUTES
-    path("properties", views.properties, name="properties")
+    path("properties/", views.properties, name="properties")
 ]

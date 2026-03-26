@@ -10,6 +10,9 @@
 <div class="d-flex justify-content-center mt-5">
    <div class="card mb-3 w-auto">
       <div class="card-body">
+
+         <div class="alert alert-danger" id="alert-form" role="alert"></div>
+
          <form action="{% url 'index' %}" method="get" id="search" class="row gx-3 gy-2 align-items-end px-3">
             <div class="col-6 col-md-4 col-lg-2">
                {{ form.location|as_crispy_field }}
@@ -39,38 +42,43 @@
       </div>
    </div>
 </div>
-
-{% for property in properties %}
-<div class="d-flex justify-content-center mt-5">
-   <div class="card border-light mb-3">
-      <div class="row g-0">
-         <div class="col-md-4">
-            <img src="{% static 'bookings/fondo.png' %}" class="img-fluid rounded-start h-100 object-fit-cover"
-               alt="...">
-         </div>
-         <div class="col-md-8">
-            <div class="card-body">
-               <h4 class="card-title fw-bold">{{ property.title|truncatechars:50 }}</h4>
-               <p class="card-text"><i class="bi bi-geo-alt-fill text-danger"></i><small class="text-body-secondary">{{
-                     property.location }}</small></p>
-               <p class="card-text mb-3">{{ property.description|truncatechars:160 }}</p>
-               <hr class="mt-1 mb-1">
-               <div class="d-flex justify-content-between align-items-end">
-                  <div>
-                     <p class="card-text mb-0"><small class="text-body-secondary">Precio por noche</small></p>
-                     <p class="card-text fs-4 fw-bold text-primary mb-0">{{ property.price_per_night }}€</p>
-                  </div>
-                  <div>
-                     <a href="#" class="primary-button text-nowrap d-inline-flex justify-content-center fw-bold">Ver
-                        disponibilidad <i class="bi bi-chevron-right ms-1"></i></a>
+<div id="initial-properties">
+   {% for property in properties %}
+   <div class="d-flex justify-content-center mt-5">
+      <div class="card border-light mb-3">
+         <div class="row g-0">
+            <div class="col-md-4">
+               <img src="{% static 'bookings/fondo.png' %}" class="img-fluid rounded-start h-100 object-fit-cover"
+                  alt="...">
+            </div>
+            <div class="col-md-8">
+               <div class="card-body">
+                  <h4 class="card-title fw-bold">{{ property.title|truncatechars:50 }}</h4>
+                  <p class="card-text"><i class="bi bi-geo-alt-fill text-danger"></i><small
+                        class="text-body-secondary">{{
+                        property.location }}</small></p>
+                  <p class="card-text mb-3">{{ property.description|truncatechars:160 }}</p>
+                  <hr class="mt-1 mb-1">
+                  <div class="d-flex justify-content-between align-items-end">
+                     <div>
+                        <p class="card-text mb-0"><small class="text-body-secondary">Precio por noche</small></p>
+                        <p class="card-text fs-4 fw-bold text-primary mb-0">{{ property.price_per_night }}€</p>
+                     </div>
+                     <div>
+                        <a href="#" class="primary-button text-nowrap d-inline-flex justify-content-center fw-bold">Ver
+                           Disponibilidad <i class="bi bi-chevron-right ms-1"></i></a>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
       </div>
    </div>
+   {% endfor %}
 </div>
-{% endfor %}
+
+<div id="searched-properties"></div>
+
 {% endblock %}
 {% block script %}
 <script src="{% static 'bookings/bookings.js' %}"></script>

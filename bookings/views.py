@@ -58,7 +58,7 @@ def properties(request):
     properties = Property.objects.all()
 
     if location:
-        properties.filter(location=location)
+        properties = properties.filter(location=location)
 
     if initial_date or final_date:
         if not initial_date or not final_date:

@@ -79,6 +79,10 @@ button.primary-button {
     color: #495057;
 }
 
+#alert-form {
+    display: none;
+}
+
 .logo-custom { height: 70px; width: auto; }
 .logo-custom-display { height: 60px; width: auto; }
 .solo-movil { display: none; }
