@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
             } else {
                 searchedProperties.textContent = '';
+                searchedProperties.className = "";
             }
             h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
             // Using textContent instead of innerHTML to prevent XSS attacks.
