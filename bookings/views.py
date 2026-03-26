@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from datetime import date
+from django.core.paginator import Paginator
 
 # Create your views here.
 class SearchForm(forms.Form):
@@ -43,9 +44,14 @@ def index(request):
     if request.user.is_authenticated:
         properties = properties.exclude(owner=request.user)
 
+    properties = properties.order_by("-timestamp")
+    paginator = Paginator(properties, 6)
+    page_number = request.GET.get('page')
+    page_properties = paginator.get_page(page_number)
+
     return render(request, "bookings/index.html", {
         "form": SearchForm(),
-        "properties": properties
+        "properties": page_properties
     })
 
 def properties(request):
@@ -118,8 +124,12 @@ def properties(request):
     if pets:
         properties = properties.filter(allow_pets=True)
 
-    properties = list(properties.values())
-    return JsonResponse(properties, safe=False)
+    properties = properties.order_by("-timestamp")
+    paginator = Paginator(properties, 6)
+    page_number = request.GET.get('page')
+    page_properties = paginator.get_page(page_number)
+
+    return JsonResponse(list(page_properties.object_list.values()), safe=False)
 
 class LoginForm(AuthenticationForm):
     error_messages = {
