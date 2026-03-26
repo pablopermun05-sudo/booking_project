@@ -38,9 +38,14 @@ class SearchForm(forms.Form):
     pets = forms.BooleanField(required=False, label="Mascotas")
 
 def index(request):
+    properties = Property.objects.all()
+
+    if request.user.is_authenticated:
+        properties = properties.exclude(owner=request.user)
 
     return render(request, "bookings/index.html", {
-        "form": SearchForm()
+        "form": SearchForm(),
+        "properties": properties
     })
 
 def properties(request):
@@ -57,6 +62,9 @@ def properties(request):
 
     properties = Property.objects.all()
 
+    if request.user.is_authenticated:
+        properties = properties.exclude(owner=request.user)
+
     if location:
         properties = properties.filter(location=location)
 
@@ -64,6 +72,7 @@ def properties(request):
         if not initial_date or not final_date:
              return JsonResponse({"error": "Ambas fechas deben ser seleccionadas."}, status=400)
 
+        # Convert dates from String into actual dates
         initial_date = date.fromisoformat(initial_date)
         final_date = date.fromisoformat(final_date)
 
@@ -72,11 +81,12 @@ def properties(request):
         elif initial_date < date.today():
             return JsonResponse({"error": "La fecha de entrada no puede ser anterior al día de hoy."}, status=400)
 
-        # Pongo "__" porque es la sintaxis del ORM de Django para realizar consultas entre modelos relacionados
+        # Using "__" to filter data across related models.
+        # Using "distinct" to prevent from duplicated properties when join
         properties = properties.exclude(
             bookings__initial_date__lt=final_date,
             bookings__final_date__gt=initial_date
-        )
+        ).distinct()
     
     if adults:
         try:

@@ -21,9 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(properties => {
             const initialProperties = document.querySelector('#initial-properties');
             const searchedProperties = document.querySelector('#searched-properties');
-
+            const h2properties = document.querySelector('#h2Index');
             initialProperties.textContent = '';
-            searchedProperties.textContent = '';
+            if(properties.length == 0) {
+                searchedProperties.textContent = 'No se encontraron resultados.';
+                searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
+            } else {
+                searchedProperties.textContent = '';
+            }
+            h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
             // Using textContent instead of innerHTML to prevent XSS attacks.
             properties.forEach(property => {
                 const divFlex = document.createElement("div");
@@ -67,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pLocation = document.createElement("p");
                 pLocation.classList.add("card-text");
                 const iLocation = document.createElement("i");
-                iLocation.classList.add("bi", "bi-geo-alt-fill", "text-danger");
+                iLocation.classList.add("bi", "bi-geo-alt-fill", "text-danger", "me-1");
                 pLocation.appendChild(iLocation);
                 const smallLocation = document.createElement("small");
                 smallLocation.classList.add("text-body-secondary");
