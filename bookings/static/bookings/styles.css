@@ -66,6 +66,17 @@ button.primary-button {
     text-shadow: none;
 }
 
+#h2Index {
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+.notResultsFound {
+    opacity: 0.7;
+}
+
 .form-label {
     font-size: 0.75rem;
     font-weight: 800;
@@ -77,6 +88,10 @@ button.primary-button {
     font-size: 0.85rem;
     font-weight: 700;
     color: #495057;
+}
+
+#alert-form {
+    display: none;
 }
 
 .logo-custom { height: 70px; width: auto; }
