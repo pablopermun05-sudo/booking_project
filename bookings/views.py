@@ -39,19 +39,9 @@ class SearchForm(forms.Form):
     pets = forms.BooleanField(required=False, label="Mascotas")
 
 def index(request):
-    properties = Property.objects.all()
-
-    if request.user.is_authenticated:
-        properties = properties.exclude(owner=request.user)
-
-    properties = properties.order_by("id")
-    paginator = Paginator(properties, 6)
-    page_number = request.GET.get('page')
-    page_properties = paginator.get_page(page_number)
 
     return render(request, "bookings/index.html", {
-        "form": SearchForm(),
-        "properties": page_properties
+        "form": SearchForm()
     })
 
 def properties(request):

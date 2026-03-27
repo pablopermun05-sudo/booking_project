@@ -32,11 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         threshold: 0.5
     });
 
-    const propertiesOnScreen = document.querySelectorAll('.initial-property');
-    if (propertiesOnScreen.length > 0) {
-        lastProperty = propertiesOnScreen[propertiesOnScreen.length - 1];
-        observerInitial.observe(lastProperty);
-    }
+    loadProperties(true);
 
     document.querySelector('#search').onsubmit = (event) => {
         event.preventDefault();
