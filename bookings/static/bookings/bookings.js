@@ -3,57 +3,40 @@ const titleLimit = 50;
 const descriptionLimit = 160;
 
 document.addEventListener('DOMContentLoaded', () => {
+    let pageNumber = 1;
+
+    // Creating the observer
+    let observer = new IntersectionObserver((entries) => {
+
+    }, {
+        rootMargin: '0px 0px 0px 0px',
+        threshold: 0.5
+    });
+
+    observer.observe()
+
     document.querySelector('#search').onsubmit = (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const urlData = new URLSearchParams(formData);
-        const alertDiv = document.querySelector('#alert-form');
-
-        fetch(`/properties/?${urlData}`)
-            .then(response => {
-                if (!response.ok) {
-                    // Extracting JSON error details before throwing to the catch block.
-                    return response.json().then(err => { throw err; });
-                }
-                alertDiv.style.display = 'none';
-                return response.json();
-            })
-            .then(properties => {
-                const initialProperties = document.querySelector('#initial-properties');
-                const searchedProperties = document.querySelector('#searched-properties');
-                const h2properties = document.querySelector('#h2Index');
-                initialProperties.textContent = '';
-                if (properties.length == 0) {
-                    searchedProperties.textContent = 'No se encontraron resultados.';
-                    searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
-                } else {
-                    searchedProperties.textContent = '';
-                    searchedProperties.className = "";
-                }
-                h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
-
-                properties.forEach(property => showProperty(property, false));
-            })
-            .catch(error => {
-                alertDiv.textContent = error.error;
-                alertDiv.style.display = 'block';
-            })
+        urlData.append('page', pageNumber);
+        loadProperties(urlData, false);
     }
 
-    
+
     // Using textContent instead of innerHTML to prevent XSS attacks.
     function showProperty(property, initial) {
         const divFlex = document.createElement("div");
         divFlex.classList.add("d-flex", "justify-content-center", "mt-5");
 
-        if(initial == true) {
+        if (initial == true) {
             const initialProperties = document.querySelector('#initial-properties');
             initialProperties.appendChild(divFlex);
         } else {
             const searchedProperties = document.querySelector('#searched-properties');
             searchedProperties.appendChild(divFlex);
         }
-        
+
 
         const divCard = document.createElement("div");
         divCard.classList.add("card", "border-light", "mb-3");
@@ -141,5 +124,49 @@ document.addEventListener('DOMContentLoaded', () => {
         divJustifyContentBetween.appendChild(divPricePerNight);
         divJustifyContentBetween.appendChild(divButton);
         divCardBody.appendChild(divJustifyContentBetween);
+    }
+
+    function loadProperties(urlData, initial) {
+        const alertDiv = document.querySelector('#alert-form');
+
+        fetch(`/properties/?${urlData}`)
+            .then(response => {
+                if (!response.ok) {
+                    // Extracting JSON error details before throwing to the catch block.
+                    return response.json().then(err => { throw err; });
+                }
+                if (pageNumber == 1) {
+                    alertDiv.style.display = 'none';
+                }
+                return response.json();
+            })
+            .then(properties => {
+                const initialProperties = document.querySelector('#initial-properties');
+                const searchedProperties = document.querySelector('#searched-properties');
+                const h2properties = document.querySelector('#h2Index');
+
+                if (pageNumber == 1) {
+                    if (initial) {
+                        h2properties.textContent = 'Viviendas Disponibles:';
+                        searchedProperties.textContent = '';
+                    } else {
+                        h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
+                        initialProperties.textContent = '';
+                    }
+                    if (properties.length == 0) {
+                        searchedProperties.textContent = 'No se encontraron resultados.';
+                        searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
+                    } else {
+                        searchedProperties.textContent = '';
+                        searchedProperties.className = "";
+                    }
+                }
+
+                properties.forEach(property => showProperty(property, initial));
+            })
+            .catch(error => {
+                alertDiv.textContent = error.error;
+                alertDiv.style.display = 'block';
+            })
     }
 })
