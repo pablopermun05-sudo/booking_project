@@ -1,33 +1,125 @@
 const MEDIA_URL = "/media/";
 const titleLimit = 50;
 const descriptionLimit = 160;
+let lastProperty;
 
 document.addEventListener('DOMContentLoaded', () => {
     let pageNumber = 1;
 
-    // Creating the observer
-    let observer = new IntersectionObserver((entries) => {
-
+    // Creating the observers
+    let observerInitial = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                pageNumber++;
+                loadProperties(true);
+            }
+        });
     }, {
         rootMargin: '0px 0px 0px 0px',
         threshold: 0.5
     });
 
-    observer.observe()
+    let observerSearched = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                pageNumber++;
+                loadProperties(false);
+            }
+        });
+    }, {
+        rootMargin: '0px 0px 0px 0px',
+        threshold: 0.5
+    });
+
+    const propertiesOnScreen = document.querySelectorAll('.initial-property');
+    if (propertiesOnScreen.length > 0) {
+        lastProperty = propertiesOnScreen[propertiesOnScreen.length - 1];
+        observerInitial.observe(lastProperty);
+    }
 
     document.querySelector('#search').onsubmit = (event) => {
         event.preventDefault();
-        const formData = new FormData(event.target);
-        const urlData = new URLSearchParams(formData);
-        urlData.append('page', pageNumber);
-        loadProperties(urlData, false);
+        pageNumber = 1;
+        observerInitial.unobserve(lastProperty);
+        observerSearched.unobserve(lastProperty);
+        loadProperties(false);
     }
 
+    function loadProperties(initial) {
+        const initialProperties = document.querySelector('#initial-properties');
+        const searchedProperties = document.querySelector('#searched-properties');
+        const h2properties = document.querySelector('#h2Index');
+
+        let urlData;
+
+        if (initial) {
+            urlData = `page=${pageNumber}`;
+        } else {
+            const formData = new FormData(document.querySelector('#search'));
+            urlData = new URLSearchParams(formData);
+            urlData.append('page', pageNumber);
+        }
+
+        const alertDiv = document.querySelector('#alert-form');
+
+        fetch(`/properties/?${urlData}`)
+            .then(response => {
+                if (!response.ok) {
+                    // Extracting JSON error details before throwing to the catch block.
+                    return response.json().then(err => { throw err; });
+                }
+                if (pageNumber == 1) {
+                    alertDiv.style.display = 'none';
+                }
+                return response.json();
+            })
+            .then(properties => {
+
+                if (pageNumber == 1) {
+                    if (initial) {
+                        h2properties.textContent = 'Viviendas Disponibles:';
+                        searchedProperties.textContent = '';
+                        searchedProperties.className = "";
+                    } else {
+                        h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
+                        initialProperties.textContent = '';
+                    }
+
+                    if (properties.length == 0) {
+                        searchedProperties.textContent = 'No se encontraron resultados.';
+                        searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
+                    }
+                }
+
+                properties.forEach(property => showProperty(property, initial));
+
+                if (lastProperty && initial) {
+                    observerInitial.unobserve(lastProperty);
+                } else if (lastProperty) {
+                    observerSearched.unobserve(lastProperty);
+                }
+
+                // Calling Observer to pay attetion when the las property is on the viewport
+                const propertiesOnScreen = document.querySelectorAll('.property');
+                lastProperty = propertiesOnScreen[propertiesOnScreen.length - 1];
+                
+                if (initial) {
+                    observerInitial.observe(lastProperty);
+                } else {
+                    observerSearched.observe(lastProperty);
+                }
+
+            })
+            .catch(error => {
+                alertDiv.textContent = error.error;
+                alertDiv.style.display = 'block';
+            })
+    }
 
     // Using textContent instead of innerHTML to prevent XSS attacks.
     function showProperty(property, initial) {
         const divFlex = document.createElement("div");
-        divFlex.classList.add("d-flex", "justify-content-center", "mt-5");
+        divFlex.classList.add("d-flex", "justify-content-center", "mt-5", "property");
 
         if (initial == true) {
             const initialProperties = document.querySelector('#initial-properties');
@@ -36,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const searchedProperties = document.querySelector('#searched-properties');
             searchedProperties.appendChild(divFlex);
         }
-
 
         const divCard = document.createElement("div");
         divCard.classList.add("card", "border-light", "mb-3");
@@ -124,49 +215,5 @@ document.addEventListener('DOMContentLoaded', () => {
         divJustifyContentBetween.appendChild(divPricePerNight);
         divJustifyContentBetween.appendChild(divButton);
         divCardBody.appendChild(divJustifyContentBetween);
-    }
-
-    function loadProperties(urlData, initial) {
-        const alertDiv = document.querySelector('#alert-form');
-
-        fetch(`/properties/?${urlData}`)
-            .then(response => {
-                if (!response.ok) {
-                    // Extracting JSON error details before throwing to the catch block.
-                    return response.json().then(err => { throw err; });
-                }
-                if (pageNumber == 1) {
-                    alertDiv.style.display = 'none';
-                }
-                return response.json();
-            })
-            .then(properties => {
-                const initialProperties = document.querySelector('#initial-properties');
-                const searchedProperties = document.querySelector('#searched-properties');
-                const h2properties = document.querySelector('#h2Index');
-
-                if (pageNumber == 1) {
-                    if (initial) {
-                        h2properties.textContent = 'Viviendas Disponibles:';
-                        searchedProperties.textContent = '';
-                    } else {
-                        h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
-                        initialProperties.textContent = '';
-                    }
-                    if (properties.length == 0) {
-                        searchedProperties.textContent = 'No se encontraron resultados.';
-                        searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
-                    } else {
-                        searchedProperties.textContent = '';
-                        searchedProperties.className = "";
-                    }
-                }
-
-                properties.forEach(property => showProperty(property, initial));
-            })
-            .catch(error => {
-                alertDiv.textContent = error.error;
-                alertDiv.style.display = 'block';
-            })
     }
 })

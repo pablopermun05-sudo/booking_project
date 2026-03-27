@@ -44,7 +44,7 @@ def index(request):
     if request.user.is_authenticated:
         properties = properties.exclude(owner=request.user)
 
-    properties = properties.order_by("-timestamp")
+    properties = properties.order_by("id")
     paginator = Paginator(properties, 6)
     page_number = request.GET.get('page')
     page_properties = paginator.get_page(page_number)
@@ -124,7 +124,7 @@ def properties(request):
     if pets:
         properties = properties.filter(allow_pets=True)
 
-    properties = properties.order_by("-timestamp")
+    properties = properties.order_by("id")
     paginator = Paginator(properties, 6)
     page_number = request.GET.get('page')
     page_properties = paginator.get_page(page_number)
