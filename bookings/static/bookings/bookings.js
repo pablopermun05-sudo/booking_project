@@ -2,6 +2,7 @@ const MEDIA_URL = "/media/";
 const titleLimit = 50;
 const descriptionLimit = 160;
 let lastProperty;
+let isLoading = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     let pageNumber = 1;
@@ -51,6 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const h2properties = document.querySelector('#h2Index');
 
         let urlData;
+
+        if(isLoading) {
+            return;
+        } else {
+            isLoading = true;
+        }
 
         if (initial) {
             urlData = `page=${pageNumber}`;
@@ -102,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Calling Observer to pay attetion when the las property is on the viewport
                 const propertiesOnScreen = document.querySelectorAll('.property');
                 lastProperty = propertiesOnScreen[propertiesOnScreen.length - 1];
-                
+
                 if (initial) {
                     observerInitial.observe(lastProperty);
                 } else {
@@ -113,6 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 alertDiv.textContent = error.error;
                 alertDiv.style.display = 'block';
+            })
+            .finally(() => {
+                isLoading = false;
             })
     }
 

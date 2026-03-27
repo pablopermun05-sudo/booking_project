@@ -127,9 +127,15 @@ def properties(request):
     properties = properties.order_by("id")
     paginator = Paginator(properties, 6)
     page_number = request.GET.get('page')
-    page_properties = paginator.get_page(page_number)
 
-    return JsonResponse(list(page_properties.object_list.values()), safe=False)
+    try:
+        page_properties = paginator.page(page_number)
+        properties = list(page_properties.object_list.values())
+    except:
+        # If page doesn`t exist, return empty list
+        properties = []
+
+    return JsonResponse(properties, safe=False)
 
 class LoginForm(AuthenticationForm):
     error_messages = {
