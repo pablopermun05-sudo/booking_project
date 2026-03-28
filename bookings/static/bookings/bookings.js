@@ -6,13 +6,14 @@ let isLoading = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     let pageNumber = 1;
+    let h2properties = document.querySelector('#h2Index');
 
     // Creating the observers
-    let observerInitial = new IntersectionObserver((entries) => {
+    let observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 pageNumber++;
-                loadProperties(true);
+                loadProperties();
             }
         });
     }, {
@@ -20,48 +21,31 @@ document.addEventListener('DOMContentLoaded', () => {
         threshold: 0.5
     });
 
-    let observerSearched = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                pageNumber++;
-                loadProperties(false);
-            }
-        });
-    }, {
-        rootMargin: '0px 0px 0px 0px',
-        threshold: 0.5
-    });
-
-    loadProperties(true);
+    h2properties.textContent = 'Viviendas Disponibles:';
+    loadProperties();
 
     document.querySelector('#search').onsubmit = (event) => {
         event.preventDefault();
         pageNumber = 1;
-        observerInitial.unobserve(lastProperty);
-        observerSearched.unobserve(lastProperty);
-        loadProperties(false);
+        if (lastProperty) {
+            observer.unobserve(lastProperty);
+        }
+        h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
+        loadProperties();
     }
 
-    function loadProperties(initial) {
-        const initialProperties = document.querySelector('#initial-properties');
-        const searchedProperties = document.querySelector('#searched-properties');
-        const h2properties = document.querySelector('#h2Index');
+    function loadProperties() {
+        const divProperties = document.querySelector('#properties');
 
-        let urlData;
-
-        if(isLoading) {
+        if (isLoading) {
             return;
         } else {
             isLoading = true;
         }
 
-        if (initial) {
-            urlData = `page=${pageNumber}`;
-        } else {
-            const formData = new FormData(document.querySelector('#search'));
-            urlData = new URLSearchParams(formData);
-            urlData.append('page', pageNumber);
-        }
+        const formData = new FormData(document.querySelector('#search'));
+        const urlData = new URLSearchParams(formData);
+        urlData.append('page', pageNumber);
 
         const alertDiv = document.querySelector('#alert-form');
 
@@ -79,37 +63,29 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(properties => {
 
                 if (pageNumber == 1) {
-                    if (initial) {
-                        h2properties.textContent = 'Viviendas Disponibles:';
-                        searchedProperties.textContent = '';
-                        searchedProperties.className = "";
-                    } else {
-                        h2properties.textContent = 'Viviendas relacionadas con tu búsqueda:';
-                        initialProperties.textContent = '';
-                    }
+
+                    divProperties.textContent = '';
+                    divProperties.className = "";
 
                     if (properties.length == 0) {
-                        searchedProperties.textContent = 'No se encontraron resultados.';
-                        searchedProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
+                        divProperties.textContent = 'No se encontraron resultados.';
+                        divProperties.classList.add("text-center", "mt-5", "fw-semibold", "fs-3", "text-white", "notResultsFound");
                     }
                 }
 
-                properties.forEach(property => showProperty(property, initial));
+                properties.forEach(property => showProperty(property));
 
-                if (lastProperty && initial) {
-                    observerInitial.unobserve(lastProperty);
-                } else if (lastProperty) {
-                    observerSearched.unobserve(lastProperty);
+                if (lastProperty) {
+                    observer.unobserve(lastProperty);
+                    lastProperty = false;
                 }
 
                 // Calling Observer to pay attetion when the las property is on the viewport
                 const propertiesOnScreen = document.querySelectorAll('.property');
                 lastProperty = propertiesOnScreen[propertiesOnScreen.length - 1];
 
-                if (initial) {
-                    observerInitial.observe(lastProperty);
-                } else {
-                    observerSearched.observe(lastProperty);
+                if (lastProperty) {
+                    observer.observe(lastProperty);
                 }
 
             })
@@ -123,17 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Using textContent instead of innerHTML to prevent XSS attacks.
-    function showProperty(property, initial) {
+    function showProperty(property) {
         const divFlex = document.createElement("div");
         divFlex.classList.add("d-flex", "justify-content-center", "mt-5", "property");
 
-        if (initial == true) {
-            const initialProperties = document.querySelector('#initial-properties');
-            initialProperties.appendChild(divFlex);
-        } else {
-            const searchedProperties = document.querySelector('#searched-properties');
-            searchedProperties.appendChild(divFlex);
-        }
+        const divProperties = document.querySelector('#properties');
+        divProperties.appendChild(divFlex);
+
 
         const divCard = document.createElement("div");
         divCard.classList.add("card", "border-light", "mb-3");
